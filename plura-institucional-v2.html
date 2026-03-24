@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plura Talks — Conta Institucional</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --deep:       #1a1730;
+    --surface:    #201d3a;
+    --card:       #251f42;
+    --border:     rgba(123,96,203,0.18);
+    --border-sub: rgba(255,255,255,0.06);
+    --p1: #2F2064;
+    --p2: #432D8E;
+    --p3: #7860CB;
+    --p4: #A790F0;
+    --g1: #7E7E7E;
+    --g2: #BEBEBE;
+    --primary:      #7860CB;
+    --primary-glow: rgba(120,96,203,0.28);
+    --text:    #f0eeff;
+    --muted:   #9b94bb;
+    --error:   #f07878;
+    --success: #7de8b8;
+    --r:    12px;
+    --r-sm:  8px;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 300;
+    background: var(--deep);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    overflow-x: hidden;
+  }
+
+  /* ─── LEFT PANEL ─── */
+  .left-panel {
+    width: 400px; min-width: 400px;
+    background: var(--p1);
+    border-right: 1px solid rgba(120,96,203,0.25);
+    padding: 52px 40px;
+    display: flex; flex-direction: column;
+    position: relative; overflow: hidden;
+    transition: width 0.38s cubic-bezier(0.4,0,0.2,1),
+                min-width 0.38s cubic-bezier(0.4,0,0.2,1),
+                padding 0.38s cubic-bezier(0.4,0,0.2,1);
+  }
+  .left-panel.collapsed {
+    width: 56px;
+    min-width: 56px;
+    padding: 20px 0;
+    align-items: center;
+  }
+  .panel-toggle {
+    position: absolute;
+    top: 18px;
+    right: 16px;
+    width: 34px; height: 34px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(167,144,240,0.2);
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column; gap: 4px;
+    z-index: 10;
+    transition: background 0.2s, border-color 0.2s;
+    flex-shrink: 0;
+  }
+  .panel-toggle:hover { background: rgba(167,144,240,0.15); border-color: rgba(167,144,240,0.4); }
+  .panel-toggle span {
+    display: block;
+    width: 16px; height: 1.5px;
+    background: rgba(255,255,255,0.8);
+    border-radius: 2px;
+    transition: transform 0.3s ease, opacity 0.3s ease, width 0.3s ease;
+  }
+  .left-panel.collapsed .panel-toggle {
+    position: static;
+    margin-top: 0;
+  }
+  .left-panel.collapsed .panel-toggle span:nth-child(2) {
+    width: 10px;
+  }
+  .panel-content {
+    display: flex; flex-direction: column; flex: 1;
+    opacity: 1;
+    transition: opacity 0.2s ease;
+    overflow: hidden;
+  }
+  .left-panel.collapsed .panel-content {
+    opacity: 0;
+    pointer-events: none;
+    width: 0;
+    flex: 0;
+  }
+  .left-panel::before {
+    content:''; position:absolute; top:-140px; right:-100px;
+    width:320px; height:320px;
+    background:radial-gradient(circle,rgba(167,144,240,.2) 0%,transparent 70%);
+    pointer-events:none;
+  }
+  .left-panel::after {
+    content:''; position:absolute; bottom:-100px; left:-60px;
+    width:280px; height:280px;
+    background:radial-gradient(circle,rgba(67,45,142,.5) 0%,transparent 70%);
+    pointer-events:none;
+  }
+  .logo { display:flex; align-items:center; gap:12px; margin-bottom:60px; position:relative; z-index:1; }
+  .logo-mark {
+    width:40px; height:40px; background:#fff;
+    border-radius:10px; display:flex; align-items:center; justify-content:center;
+  }
+  .logo-mark svg { width:24px; height:24px; }
+  .logo-wordmark {
+    font-family:'Roboto Mono',monospace; font-weight:500; font-size:18px;
+    letter-spacing:0.04em; color:#fff;
+  }
+  .logo-wordmark span { font-weight:300; color:var(--p4); }
+  .panel-headline {
+    font-family:'Montserrat',sans-serif; font-size:30px; font-weight:600;
+    line-height:1.2; letter-spacing:-0.01em; color:#fff;
+    margin-bottom:14px; position:relative; z-index:1;
+  }
+  .panel-headline em { font-style:normal; color:var(--p4); }
+  .panel-sub {
+    font-size:13px; font-weight:300; color:rgba(240,238,255,.65);
+    line-height:1.65; margin-bottom:44px; position:relative; z-index:1;
+  }
+  .trust-items { display:flex; flex-direction:column; gap:12px; flex:1; position:relative; z-index:1; }
+  .trust-item {
+    display:flex; align-items:flex-start; gap:14px;
+    padding:14px 16px; background:rgba(255,255,255,.05);
+    border:1px solid rgba(167,144,240,.2); border-radius:var(--r);
+    transition:border-color .2s;
+  }
+  .trust-item:hover { border-color:rgba(167,144,240,.45); }
+  .trust-icon {
+    width:32px; height:32px; min-width:32px;
+    background:rgba(167,144,240,.15); border-radius:var(--r-sm);
+    display:flex; align-items:center; justify-content:center; font-size:15px;
+  }
+  .trust-label { font-size:12px; font-weight:500; color:#fff; margin-bottom:3px; font-family:'Roboto Mono',monospace; }
+  .trust-desc  { font-size:11.5px; font-weight:300; color:rgba(240,238,255,.55); line-height:1.5; }
+  .panel-footer { margin-top:36px; font-size:12px; font-weight:300; color:rgba(240,238,255,.45); position:relative; z-index:1; }
+  .panel-footer a { color:var(--p4); text-decoration:none; font-weight:400; }
+
+  /* ─── RIGHT PANEL ─── */
+  .right-panel {
+    flex:1; padding:52px 64px;
+    overflow-y:auto; background:var(--deep); position:relative;
+  }
+  .right-panel::before {
+    content:''; position:fixed; top:0; right:0;
+    width:600px; height:600px;
+    background:radial-gradient(ellipse at 80% 10%,rgba(67,45,142,.15) 0%,transparent 65%);
+    pointer-events:none;
+  }
+
+  /* ─── PROGRESS ─── */
+  .progress-wrap { display:flex; align-items:center; gap:10px; margin-bottom:52px; position:relative; z-index:1; }
+  .step-track { flex:1; display:flex; gap:5px; align-items:center; }
+  .step-seg {
+    flex:1; height:3px; background:rgba(120,96,203,.2);
+    border-radius:2px; transition:background .4s;
+  }
+  .step-seg.done   { background:var(--p3); }
+  .step-seg.active { background:var(--p4); box-shadow:0 0 8px rgba(167,144,240,.5); }
+  .step-badge {
+    font-family:'Roboto Mono',monospace; font-size:11px;
+    font-weight:400; color:var(--muted); white-space:nowrap;
+  }
+
+  /* ─── SCREENS ─── */
+  .screen { display:none; animation:fadeUp .3s ease; max-width:540px; position:relative; z-index:1; }
+  .screen.active { display:block; }
+  @keyframes fadeUp { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+
+  .screen-tag {
+    font-family:'Roboto Mono',monospace; font-size:10px; font-weight:400;
+    letter-spacing:0.14em; text-transform:uppercase; color:var(--p4); margin-bottom:10px;
+  }
+  .screen-title {
+    font-family:'Montserrat',sans-serif; font-size:26px; font-weight:600;
+    letter-spacing:-0.015em; color:#fff; margin-bottom:8px; line-height:1.2;
+  }
+  .screen-sub { font-size:13.5px; font-weight:300; color:var(--muted); margin-bottom:32px; line-height:1.65; }
+
+  /* ─── OPTION CARDS ─── */
+  .option-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:28px; }
+  .option-grid.col1 { grid-template-columns:1fr; }
+  .option-card {
+    padding:14px 16px; background:var(--card);
+    border:1.5px solid var(--border-sub); border-radius:var(--r);
+    cursor:pointer; display:flex; align-items:center; gap:12px;
+    transition:all .2s; user-select:none;
+  }
+  .option-card:hover { border-color:rgba(120,96,203,.4); background:rgba(120,96,203,.07); }
+  .option-card.selected { border-color:var(--p3); background:rgba(120,96,203,.13); }
+  .oc-icon { font-size:18px; width:30px; text-align:center; flex-shrink:0; }
+  .oc-text { font-size:13.5px; font-weight:500; color:#fff; }
+  .oc-sub  { font-size:11.5px; font-weight:300; color:var(--muted); margin-top:2px; }
+  .check-dot {
+    width:18px; height:18px; border-radius:50%;
+    border:1.5px solid rgba(120,96,203,.35); margin-left:auto; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:9px; color:transparent; transition:all .2s;
+  }
+  .option-card.selected .check-dot { background:var(--p3); border-color:var(--p3); color:#fff; }
+
+  /* ─── MULTI OPTIONS ─── */
+  .multi-option {
+    padding:13px 16px; background:var(--card);
+    border:1.5px solid var(--border-sub); border-radius:var(--r);
+    cursor:pointer; display:flex; align-items:center; gap:12px;
+    margin-bottom:8px; transition:all .2s; user-select:none;
+    font-size:13.5px; font-weight:400; color:var(--text);
+  }
+  .multi-option:hover   { border-color:rgba(120,96,203,.4); background:rgba(120,96,203,.06); }
+  .multi-option.selected{ border-color:var(--p3); background:rgba(120,96,203,.12); }
+  .multi-check {
+    width:18px; height:18px; min-width:18px; border-radius:5px;
+    border:1.5px solid rgba(120,96,203,.35);
+    display:flex; align-items:center; justify-content:center;
+    font-size:9px; color:transparent; transition:all .2s;
+  }
+  .multi-option.selected .multi-check { background:var(--p3); border-color:var(--p3); color:#fff; }
+
+  /* ─── SECTION TITLE ─── */
+  .section-title {
+    font-family:'Roboto Mono',monospace; font-size:10px; font-weight:500;
+    letter-spacing:0.1em; text-transform:uppercase; color:var(--muted);
+    margin:26px 0 12px; padding-bottom:8px; border-bottom:1px solid var(--border-sub);
+  }
+
+  /* ─── FORM ─── */
+  .field-group { margin-bottom:18px; }
+  .field-row { display:grid; grid-template-columns:1fr 1fr; gap:14px; }
+  label {
+    display:block; font-family:'Roboto Mono',monospace; font-size:10.5px;
+    font-weight:400; letter-spacing:0.05em; color:var(--muted);
+    margin-bottom:7px; text-transform:uppercase;
+  }
+  input[type="text"],input[type="email"],input[type="password"],input[type="tel"],select {
+    width:100%; background:var(--card); border:1.5px solid var(--border-sub);
+    border-radius:var(--r-sm); padding:12px 14px;
+    font-family:'Montserrat',sans-serif; font-weight:300; font-size:13.5px;
+    color:var(--text); outline:none; transition:border-color .2s,box-shadow .2s; appearance:none;
+  }
+  input::placeholder { color:rgba(155,148,187,.4); }
+  select option { background:var(--card); }
+  input:focus,select:focus { border-color:var(--p3); box-shadow:0 0 0 3px var(--primary-glow); }
+  input.error { border-color:var(--error); }
+  .field-error { font-size:11px; font-weight:400; color:var(--error); margin-top:6px; display:none; }
+  .field-error.show { display:block; }
+
+  /* pw rules */
+  .pw-rules { margin-top:10px; display:flex; flex-wrap:wrap; gap:7px; }
+  .pw-rule {
+    font-family:'Roboto Mono',monospace; font-size:10px; padding:3px 10px;
+    border-radius:20px; background:var(--card); border:1px solid var(--border-sub);
+    color:var(--muted); transition:all .25s;
+  }
+  .pw-rule.pass { background:rgba(125,232,184,.1); border-color:rgba(125,232,184,.3); color:var(--success); }
+
+  /* checkboxes */
+  .checkbox-row { display:flex; align-items:flex-start; gap:12px; margin-bottom:16px; }
+  .checkbox-row input[type="checkbox"] { width:17px; height:17px; min-width:17px; accent-color:var(--p3); margin-top:2px; }
+  .checkbox-row label {
+    font-family:'Montserrat',sans-serif; font-size:12.5px; font-weight:300;
+    color:var(--muted); margin-bottom:0; text-transform:none;
+    letter-spacing:0; line-height:1.5;
+  }
+  .checkbox-row a { color:var(--p4); text-decoration:none; }
+
+  /* privacy block */
+  .privacy-block { background:var(--card); border:1px solid var(--border); border-radius:var(--r); padding:22px; margin-bottom:24px; }
+  .privacy-item { display:flex; gap:12px; margin-bottom:16px; }
+  .privacy-item:last-child { margin-bottom:0; }
+  .pi-icon { font-size:17px; width:26px; flex-shrink:0; margin-top:1px; text-align:center; }
+  .pi-text { font-size:12.5px; font-weight:300; color:var(--muted); line-height:1.55; }
+  .pi-text strong {
+    display:block; font-family:'Roboto Mono',monospace; font-size:11px; font-weight:500;
+    color:var(--text); letter-spacing:0.02em; margin-bottom:3px;
+  }
+
+  /* activation */
+  .activation-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:28px; }
+  .activation-card {
+    padding:20px 16px; background:var(--card);
+    border:1.5px solid var(--border-sub); border-radius:var(--r);
+    cursor:pointer; text-align:center; transition:all .2s;
+  }
+  .activation-card:hover { border-color:rgba(120,96,203,.4); }
+  .activation-card.selected { border-color:var(--p3); background:rgba(120,96,203,.12); }
+  .ac-icon  { font-size:26px; margin-bottom:8px; }
+  .ac-label { font-size:12.5px; font-weight:500; color:#fff; }
+  .ac-desc  { font-size:11px; font-weight:300; color:var(--muted); margin-top:3px; line-height:1.4; }
+
+  /* code inputs */
+  .code-inputs { display:flex; gap:10px; margin-bottom:24px; }
+  .code-inputs input {
+    width:52px; height:56px; min-width:52px;
+    text-align:center; font-family:'Roboto Mono',monospace;
+    font-size:24px; font-weight:500; padding:0; border-radius:var(--r);
+  }
+
+  /* spinner */
+  @keyframes spin { to { transform:rotate(360deg); } }
+  .spinner {
+    width:56px; height:56px; border:3px solid rgba(120,96,203,.2);
+    border-top-color:var(--p3); border-radius:50%; margin:0 auto 24px;
+    animation:spin 1s linear infinite;
+  }
+
+  /* success */
+  .success-screen { text-align:center; padding:24px 0; }
+  .success-icon {
+    width:76px; height:76px; background:rgba(120,96,203,.15);
+    border:1px solid rgba(120,96,203,.3); border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    font-size:34px; margin:0 auto 22px;
+  }
+  .success-title { font-family:'Montserrat',sans-serif; font-size:26px; font-weight:600; color:#fff; margin-bottom:12px; }
+  .success-sub {
+    font-size:13.5px; font-weight:300; color:var(--muted); line-height:1.65;
+    margin-bottom:32px; max-width:380px; margin-left:auto; margin-right:auto;
+  }
+  .success-actions { display:flex; flex-direction:column; gap:10px; max-width:340px; margin:0 auto; }
+
+  /* commercial box */
+  .commercial-box {
+    background:linear-gradient(135deg,rgba(47,32,100,.6),rgba(67,45,142,.4));
+    border:1px solid rgba(167,144,240,.25); border-radius:14px;
+    padding:28px; margin-bottom:24px; text-align:center;
+  }
+  .commercial-box .cb-icon { font-size:38px; margin-bottom:14px; }
+  .commercial-box .cb-title { font-family:'Montserrat',sans-serif; font-size:20px; font-weight:600; color:#fff; margin-bottom:10px; }
+  .commercial-box .cb-text  { font-size:13px; font-weight:300; color:var(--muted); line-height:1.6; }
+
+  /* buttons */
+  .btn-primary {
+    width:100%; padding:13px; background:var(--p3);
+    border:none; border-radius:var(--r-sm); color:#fff;
+    font-family:'Montserrat',sans-serif; font-size:14px; font-weight:500;
+    cursor:pointer; transition:all .2s; margin-top:8px; letter-spacing:0.01em;
+  }
+  .btn-primary:hover { background:var(--p2); transform:translateY(-1px); box-shadow:0 8px 22px var(--primary-glow); }
+  .btn-secondary {
+    width:100%; padding:12px; background:transparent;
+    border:1.5px solid var(--border); border-radius:var(--r-sm); color:var(--muted);
+    font-family:'Montserrat',sans-serif; font-size:13.5px; font-weight:400;
+    cursor:pointer; transition:all .2s; margin-top:8px;
+  }
+  .btn-secondary:hover { border-color:var(--p3); color:var(--p4); }
+  .btn-link {
+    background:none; border:none; color:var(--p4);
+    font-family:'Montserrat',sans-serif; font-size:12.5px; font-weight:400;
+    cursor:pointer; padding:8px 0; text-decoration:underline;
+    text-underline-offset:3px; margin-top:8px; width:100%;
+  }
+
+  ::-webkit-scrollbar { width:4px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:rgba(120,96,203,.3); border-radius:2px; }
+
+  @media (max-width:900px) {
+    .left-panel { display:none; }
+    .right-panel { padding:36px 22px; }
+  }
+
+  /* ── LOGIN MODAL ── */
+  .login-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(10, 8, 25, 0.8);
+    backdrop-filter: blur(6px);
+    z-index: 3000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .login-backdrop.open {
+    opacity: 1;
+    pointer-events: all;
+  }
+  .login-card {
+    background: var(--surface);
+    border: 1px solid rgba(120,96,203,0.25);
+    border-radius: 22px;
+    width: 100%;
+    max-width: 400px;
+    padding: 40px 36px 36px;
+    position: relative;
+    box-shadow: 0 32px 80px rgba(0,0,0,0.55);
+    transform: translateY(28px) scale(0.96);
+    opacity: 0;
+    transition: transform 0.32s cubic-bezier(0.34,1.42,0.64,1), opacity 0.28s ease;
+    overflow: visible;
+  }
+  .login-backdrop.open .login-card {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  .login-luma {
+    position: absolute;
+    top: -72px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 110px;
+    filter: drop-shadow(0 8px 24px rgba(120,96,203,0.45));
+    pointer-events: none;
+    animation: luma-float 3.5s ease-in-out infinite;
+  }
+  @keyframes luma-float {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50%       { transform: translateX(-50%) translateY(-8px); }
+  }
+  .login-logo {
+    display: block;
+    height: 26px;
+    margin: 0 auto 6px;
+  }
+  .login-title {
+    text-align: center;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
+    color: #fff;
+    margin-bottom: 4px;
+  }
+  .login-sub {
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    margin-bottom: 28px;
+  }
+  .login-divider {
+    height: 1px;
+    background: var(--border);
+    margin-bottom: 24px;
+  }
+  .login-field {
+    margin-bottom: 14px;
+  }
+  .login-field label {
+    display: block;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+  .login-field input {
+    width: 100%;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(120,96,203,0.2);
+    border-radius: 10px;
+    padding: 11px 14px;
+    font-size: 13.5px;
+    font-family: 'Montserrat', sans-serif;
+    color: #fff;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .login-field input:focus {
+    border-color: var(--p3);
+    box-shadow: 0 0 0 3px rgba(120,96,203,0.15);
+  }
+  .login-field input::placeholder { color: rgba(155,148,187,0.5); }
+  .login-btn {
+    width: 100%;
+    padding: 13px;
+    margin-top: 8px;
+    background: linear-gradient(135deg, var(--p3), var(--p2));
+    border: none;
+    border-radius: 10px;
+    color: #fff;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: opacity 0.2s, transform 0.18s;
+    letter-spacing: 0.02em;
+  }
+  .login-btn:hover  { opacity: 0.9; transform: translateY(-1px); }
+  .login-btn:active { transform: translateY(0); }
+  .login-close {
+    position: absolute;
+    top: 16px; right: 16px;
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.1);
+    color: var(--muted);
+    font-size: 14px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.18s;
+  }
+  .login-close:hover { color: #fff; background: rgba(255,255,255,0.12); }
+  .login-footer-text {
+    text-align: center;
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 20px;
+  }
+  .login-footer-text a { color: var(--p4); text-decoration: none; font-weight: 500; }
+</style>
+</head>
+<body>
+
+<!-- LEFT PANEL -->
+<div class="left-panel" id="left-panel">
+  <button class="panel-toggle" onclick="togglePanel()" aria-label="Recolher painel">
+    <span></span><span></span><span></span>
+  </button>
+
+  <div class="panel-content">
+    <div class="logo">
+      <img src="Fotos_plura/logo_texto_branca.png" alt="PluraTalks" style="height:36px;">
+    </div>
+
+    <div class="panel-headline">Saúde emocional<br>para <em>toda</em> sua<br>instituição</div>
+    <p class="panel-sub">Plataforma institucional de apoio psicológico com IA, comunidade anônima e relatórios agregados.</p>
+
+    <div class="trust-items">
+      <div class="trust-item">
+        <div class="trust-icon">🔒</div>
+        <div><div class="trust-label">Dados protegidos</div><div class="trust-desc">Relatórios agregados e anonimizados. Conformidade com LGPD.</div></div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">🤖</div>
+        <div><div class="trust-label">IA + moderação humana</div><div class="trust-desc">Triagem inteligente com suporte de moderadores especializados.</div></div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">🌐</div>
+        <div><div class="trust-label">Comunidade anônima</div><div class="trust-desc">Espaço seguro de escuta, pertencimento e acolhimento emocional.</div></div>
+      </div>
+      <div class="trust-item">
+        <div class="trust-icon">📊</div>
+        <div><div class="trust-label">Dashboard institucional</div><div class="trust-desc">Visibilidade sobre o clima emocional sem expor indivíduos.</div></div>
+      </div>
+    </div>
+
+    <div class="panel-footer">Já tem uma conta? <a href="#" onclick="openLogin(event)">Entrar →</a></div>
+  </div>
+</div>
+
+<!-- RIGHT PANEL -->
+<div class="right-panel">
+  <div class="progress-wrap">
+    <div class="step-track" id="stepTrack"></div>
+    <div class="step-badge" id="stepBadge">01 / 10</div>
+  </div>
+
+  <!-- SCREEN 1 -->
+  <div class="screen active" id="screen-1">
+    <div class="screen-tag">Etapa 01</div>
+    <div class="screen-title">Bem-vindo à Plura Talks</div>
+    <p class="screen-sub">Como sua instituição deseja utilizar a plataforma?</p>
+    <div class="option-grid">
+      <div class="option-card" onclick="selectOption(this,'tipo')">
+        <span class="oc-icon">🏢</span>
+        <div><div class="oc-text">Empresa</div><div class="oc-sub">Todos os Colaboradores</div></div>
+        <div class="check-dot">✓</div>
+      </div>
+      <div class="option-card" onclick="selectOption(this,'tipo')">
+        <span class="oc-icon">🎓</span>
+        <div><div class="oc-text">Escola / Universidade</div><div class="oc-sub">Alunos e docentes</div></div>
+        <div class="check-dot">✓</div>
+      </div>
+      <div class="option-card" onclick="selectOption(this,'tipo')">
+        <span class="oc-icon">🤝</span>
+        <div><div class="oc-text">ONG / Comunidade</div><div class="oc-sub">Impacto social</div></div>
+        <div class="check-dot">✓</div>
+      </div>
+      <div class="option-card" onclick="selectOption(this,'tipo')">
+        <span class="oc-icon">🏥</span>
+        <div><div class="oc-text">Clínica / Profissional</div><div class="oc-sub">Saúde e bem-estar</div></div>
+        <div class="check-dot">✓</div>
+      </div>
+      <div class="option-card" onclick="selectOption(this,'tipo')">
+        <span class="oc-icon">➕</span>
+        <div><div class="oc-text">Outro</div><div class="oc-sub">Outro contexto</div></div>
+        <div class="check-dot">✓</div>
+      </div>
+    </div>
+    <div class="field-error" id="err-tipo">Selecione uma opção para continuar</div>
+    <button class="btn-primary" onclick="goNext(1)">Continuar →</button>
+  </div>
+
+  <!-- SCREEN 2: DIAGNÓSTICO -->
+  <div class="screen" id="screen-2">
+    <div class="screen-tag">Etapa 02</div>
+    <div class="screen-title">Diagnóstico inicial</div>
+    <p class="screen-sub">Vamos entender melhor o contexto da sua instituição.</p>
+
+    <div class="section-title">Qual o principal objetivo?</div>
+    <div class="multi-option" onclick="toggleMulti(this)"><div class="multi-check">✓</div>Reduzir estresse e burnout</div>
+    <div class="multi-option" onclick="toggleMulti(this)"><div class="multi-check">✓</div>Apoiar saúde emocional</div>
+    <div class="multi-option" onclick="toggleMulti(this)"><div class="multi-check">✓</div>Aumentar engajamento</div>
+    <div class="multi-option" onclick="toggleMulti(this)"><div class="multi-check">✓</div>Oferecer suporte psicológico</div>
+    <div class="multi-option" onclick="toggleMulti(this)"><div class="multi-check">✓</div>Outros</div>
+
+    <div class="section-title">Qual o principal desafio?</div>
+    <div class="multi-option" onclick="toggleMulti(this)"><div class="multi-check">✓</div>Ansiedade</div>
+    <div class="multi-option" onclick="toggleMulti(this)"><div class="multi-check">✓</div>Depressão</div>
+    <div class="multi-option" onclick="toggleMulti(this)"><div class="multi-check">✓</div>Estresse e sobrecarga</div>
+    <div class="multi-option" onclick="toggleMulti(this)"><div class="multi-check">✓</div>Conflitos emocionais</div>
+    <div class="multi-option" onclick="toggleMulti(this)"><div class="multi-check">✓</div>Luto e trauma</div>
+    <div class="multi-option" onclick="toggleMulti(this)"><div class="multi-check">✓</div>Insegurança pessoal</div>
+
+    <div class="section-title">Já existe alguma solução hoje?</div>
+    <div class="option-grid col1">
+      <div class="option-card" onclick="selectOption(this,'solucao')">
+        <span class="oc-icon">❌</span><div><div class="oc-text">Não existe nada</div></div>
+        <div class="check-dot">✓</div>
+      </div>
+      <div class="option-card" onclick="selectOption(this,'solucao')">
+        <span class="oc-icon">💆</span><div><div class="oc-text">Terapia pontual</div></div>
+        <div class="check-dot">✓</div>
+      </div>
+      <div class="option-card" onclick="selectOption(this,'solucao')">
+        <span class="oc-icon">💼</span><div><div class="oc-text">Benefício corporativo</div></div>
+        <div class="check-dot">✓</div>
+      </div>
+      <div class="option-card" onclick="selectOption(this,'solucao')">
+        <span class="oc-icon">🔄</span><div><div class="oc-text">Outro</div></div>
+        <div class="check-dot">✓</div>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="goNext(2)">Continuar →</button>
+    <button class="btn-secondary" onclick="goBack(2)">← Voltar</button>
+  </div>
+
+  <!-- SCREEN 3: DADOS -->
+  <div class="screen" id="screen-3">
+    <div class="screen-tag">Etapa 03</div>
+    <div class="screen-title">Dados da instituição</div>
+    <p class="screen-sub">Informações que identificam sua organização na plataforma.</p>
+
+    <div class="section-title">Sobre a instituição</div>
+    <div class="field-group">
+      <label>Nome da instituição *</label>
+      <input type="text" id="nome-inst" placeholder="Ex: Empresa XYZ S.A.">
+    </div>
+    <div class="field-row">
+      <div class="field-group">
+        <label>CNPJ *</label>
+        <input type="text" id="cnpj" placeholder="00.000.000/0001-00" oninput="maskCNPJ(this)">
+      </div>
+      <div class="field-group">
+        <label>Nº estimado de usuários *</label>
+        <input type="text" id="num-users" placeholder="Ex: 500">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field-group">
+        <label>Setor de atuação *</label>
+        <select id="setor">
+          <option value="">Selecione...</option>
+          <option>Tecnologia</option><option>Saúde</option><option>Educação</option>
+          <option>Financeiro</option><option>Varejo</option><option>Indústria</option>
+          <option>Serviços</option><option>Terceiro setor</option><option>Outro</option>
+        </select>
+      </div>
+      <div class="field-group">
+        <label>Cidade / Estado *</label>
+        <input type="text" id="cidade" placeholder="Ex: São Paulo, SP">
+      </div>
+    </div>
+    <div class="section-title">Responsável pelo contrato</div>
+    <div class="field-row">
+      <div class="field-group">
+        <label>Nome completo *</label>
+        <input type="text" id="nome-resp" placeholder="Seu nome">
+      </div>
+      <div class="field-group">
+        <label>Cargo *</label>
+        <input type="text" id="cargo" placeholder="Ex: Gerente de RH">
+      </div>
+    </div>
+    <div class="field-row">
+      <div class="field-group">
+        <label>E-mail corporativo *</label>
+        <input type="email" id="email-corp" placeholder="voce@empresa.com">
+      </div>
+      <div class="field-group">
+        <label>Telefone / WhatsApp *</label>
+        <input type="tel" id="tel" placeholder="(11) 99999-9999" oninput="maskPhone(this)">
+      </div>
+    </div>
+    <div class="field-error" id="err-campos">Preencha todos os campos obrigatórios</div>
+    <button class="btn-primary" onclick="goNext(3)">Continuar →</button>
+    <button class="btn-secondary" onclick="goBack(3)">← Voltar</button>
+  </div>
+
+  <!-- SCREEN 4: ANÁLISE -->
+  <div class="screen" id="screen-4">
+    <div class="screen-tag">Análise automática</div>
+    <div class="screen-title">Analisando seu perfil</div>
+    <p class="screen-sub">Nosso sistema está classificando sua instituição para a melhor experiência de implementação.</p>
+    <div style="padding:44px 0;text-align:center;">
+      <div class="spinner"></div>
+      <p style="color:var(--muted);font-size:13px;font-family:'Roboto Mono',monospace;" id="analysis-text">Avaliando porte da instituição...</p>
+    </div>
+  </div>
+
+  <!-- SCREEN 5: CRIAR LOGIN -->
+  <div class="screen" id="screen-5">
+    <div class="screen-tag">Etapa 05</div>
+    <div class="screen-title">Criar conta administrativa</div>
+    <p class="screen-sub">Dados de acesso do administrador institucional.</p>
+    <div class="field-group">
+      <label>Nome do administrador *</label>
+      <input type="text" id="nome-admin" placeholder="Seu nome completo">
+    </div>
+    <div class="field-group">
+      <label>E-mail corporativo *</label>
+      <input type="email" id="email-admin" placeholder="voce@empresa.com">
+    </div>
+    <div class="field-group">
+      <label>Senha *</label>
+      <input type="password" id="senha" placeholder="Crie uma senha forte" oninput="checkPw(this.value)">
+      <div class="pw-rules">
+        <span class="pw-rule" id="pw-len">8+ caracteres</span>
+        <span class="pw-rule" id="pw-upper">Maiúscula</span>
+        <span class="pw-rule" id="pw-num">Número</span>
+        <span class="pw-rule" id="pw-special">Especial</span>
+      </div>
+    </div>
+    <div class="field-group">
+      <label>Confirmar senha *</label>
+      <input type="password" id="senha2" placeholder="Repita a senha">
+      <div class="field-error" id="err-pw2">As senhas não coincidem</div>
+    </div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="ck-termos">
+      <label for="ck-termos">Aceito os <a href="#">termos de uso</a> e a <a href="#">política de privacidade</a></label>
+    </div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="ck-2fa">
+      <label for="ck-2fa">Ativar verificação em dois fatores (recomendado)</label>
+    </div>
+    <div class="field-error" id="err-login">Verifique os campos acima</div>
+    <button class="btn-primary" onclick="goNext(5)">Criar conta →</button>
+    <button class="btn-secondary" onclick="goBack(5)">← Voltar</button>
+  </div>
+
+  <!-- SCREEN 6: VERIFICAÇÃO -->
+  <div class="screen" id="screen-6">
+    <div class="screen-tag">Etapa 06</div>
+    <div class="screen-title">Verificação de e-mail</div>
+    <p class="screen-sub">Enviamos um código de 6 dígitos para <strong id="email-sent" style="color:var(--text)">seu e-mail</strong>.</p>
+    <div class="code-inputs">
+      <input type="text" maxlength="1" oninput="nextInput(this,0)">
+      <input type="text" maxlength="1" oninput="nextInput(this,1)">
+      <input type="text" maxlength="1" oninput="nextInput(this,2)">
+      <input type="text" maxlength="1" oninput="nextInput(this,3)">
+      <input type="text" maxlength="1" oninput="nextInput(this,4)">
+      <input type="text" maxlength="1" oninput="nextInput(this,5)">
+    </div>
+    <div class="field-error" id="err-code">Código incorreto. Tente novamente.</div>
+    <button class="btn-primary" onclick="goNext(6)">Confirmar →</button>
+    <button class="btn-link" onclick="alert('Código reenviado!')">Reenviar código</button>
+    <button class="btn-secondary" onclick="goBack(6)">← Voltar</button>
+  </div>
+
+  <!-- SCREEN 7: PERSONALIZAÇÃO -->
+  <div class="screen" id="screen-7">
+    <div class="screen-tag">Etapa 07</div>
+    <div class="screen-title">Personalização</div>
+    <p class="screen-sub">Configure a experiência da sua instituição na plataforma.</p>
+
+    <div class="section-title">Linguagem da plataforma</div>
+    <div class="option-grid">
+      <div class="option-card" onclick="selectOption(this,'lang')">
+        <span class="oc-icon">💼</span>
+        <div><div class="oc-text">Corporativa</div><div class="oc-sub">Formal e objetiva</div></div>
+        <div class="check-dot">✓</div>
+      </div>
+      <div class="option-card" onclick="selectOption(this,'lang')">
+        <span class="oc-icon">🫂</span>
+        <div><div class="oc-text">Acolhedora</div><div class="oc-sub">Próxima e empática</div></div>
+        <div class="check-dot">✓</div>
+      </div>
+      <div class="option-card" onclick="selectOption(this,'lang')">
+        <span class="oc-icon">✨</span>
+        <div><div class="oc-text">Jovem</div><div class="oc-sub">Informal e dinâmica</div></div>
+        <div class="check-dot">✓</div>
+      </div>
+    </div>
+
+    <div class="section-title">Público principal</div>
+    <div class="option-grid">
+      <div class="option-card" onclick="selectOption(this,'pub')">
+        <span class="oc-icon">👔</span>
+        <div><div class="oc-text">Adultos</div></div>
+        <div class="check-dot">✓</div>
+      </div>
+      <div class="option-card" onclick="selectOption(this,'pub')">
+        <span class="oc-icon">🧑‍🎓</span>
+        <div><div class="oc-text">Jovens</div></div>
+        <div class="check-dot">✓</div>
+      </div>
+      <div class="option-card" onclick="selectOption(this,'pub')">
+        <span class="oc-icon">👥</span>
+        <div><div class="oc-text">Misto</div></div>
+        <div class="check-dot">✓</div>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="goNext(7)" style="margin-top:16px">Continuar →</button>
+    <button class="btn-secondary" onclick="goBack(7)">← Voltar</button>
+  </div>
+
+  <!-- SCREEN 8: PRIVACIDADE -->
+  <div class="screen" id="screen-8">
+    <div class="screen-tag">Etapa 08</div>
+    <div class="screen-title">Privacidade e LGPD</div>
+    <p class="screen-sub">Entenda como protegemos os dados dos seus usuários.</p>
+    <div class="privacy-block">
+      <div class="privacy-item">
+        <div class="pi-icon">🔒</div>
+        <div class="pi-text"><strong>Dados individuais não são compartilhados</strong>A instituição nunca terá acesso a informações identificadas de usuários individuais.</div>
+      </div>
+      <div class="privacy-item">
+        <div class="pi-icon">📊</div>
+        <div class="pi-text"><strong>Relatórios agregados e anonimizados</strong>Todos os dados são consolidados sem identificação pessoal antes de qualquer análise.</div>
+      </div>
+      <div class="privacy-item">
+        <div class="pi-icon">🤖</div>
+        <div class="pi-text"><strong>IA monitora risco, não expõe pessoas</strong>O sistema de triagem sinaliza risco ao time de saúde sem expor identidades.</div>
+      </div>
+      <div class="privacy-item">
+        <div class="pi-icon">⚖️</div>
+        <div class="pi-text"><strong>Conformidade total com a LGPD</strong>A plataforma segue as diretrizes da Lei Geral de Proteção de Dados (Lei 13.709/2018).</div>
+      </div>
+    </div>
+    <div class="checkbox-row">
+      <input type="checkbox" id="ck-lgpd">
+      <label for="ck-lgpd">Concordo com as diretrizes de privacidade e proteção de dados</label>
+    </div>
+    <div class="field-error" id="err-lgpd">É necessário aceitar para continuar</div>
+    <button class="btn-primary" onclick="goNext(8)">Continuar →</button>
+    <button class="btn-secondary" onclick="goBack(8)">← Voltar</button>
+  </div>
+
+  <!-- SCREEN 9: ATIVAÇÃO -->
+  <div class="screen" id="screen-9">
+    <div class="screen-tag">Etapa 09</div>
+    <div class="screen-title">Ativação de usuários</div>
+    <p class="screen-sub">Como deseja convidar os membros da sua instituição?</p>
+    <div class="activation-grid">
+      <div class="activation-card" onclick="selectActivation(this)">
+        <div class="ac-icon">✉️</div>
+        <div class="ac-label">Convite por e-mail</div>
+        <div class="ac-desc">Envie convites individuais ou em lote</div>
+      </div>
+      <div class="activation-card" onclick="selectActivation(this)">
+        <div class="ac-icon">🔗</div>
+        <div class="ac-label">Gerar link de acesso</div>
+        <div class="ac-desc">Link único para compartilhar internamente</div>
+      </div>
+      <div class="activation-card" onclick="selectActivation(this)">
+        <div class="ac-icon">📋</div>
+        <div class="ac-label">Upload de lista</div>
+        <div class="ac-desc">Importe uma planilha de usuários</div>
+      </div>
+      <div class="activation-card" onclick="selectActivation(this)">
+        <div class="ac-icon">⏱️</div>
+        <div class="ac-label">Configurar depois</div>
+        <div class="ac-desc">Pular esta etapa por enquanto</div>
+      </div>
+    </div>
+    <button class="btn-primary" onclick="goNext(9)">Finalizar →</button>
+    <button class="btn-secondary" onclick="goBack(9)">← Voltar</button>
+  </div>
+
+  <!-- SCREEN 10: SUCESSO -->
+  <div class="screen" id="screen-10">
+    <div class="success-screen">
+      <div class="success-icon">🎉</div>
+      <div class="success-title">Conta institucional criada com sucesso</div>
+      <p class="success-sub">Seu ambiente Plura foi configurado. Vamos começar a construir um espaço seguro e acolhedor para sua comunidade.</p>
+      <div class="success-actions">
+        <button class="btn-primary" onclick="window.location.href='pluratalks-workspace (2).html'">Iniciar onboarding guiado →</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- COMMERCIAL -->
+  <div class="screen" id="screen-commercial">
+    <div class="screen-tag">Parceria consultiva</div>
+    <div class="screen-title">Implementação personalizada</div>
+    <p class="screen-sub">Seu perfil indica necessidade de uma implementação estruturada com suporte especializado.</p>
+    <div class="commercial-box">
+      <div class="cb-icon">🤝</div>
+      <div class="cb-title">Vamos estruturar essa parceria com você</div>
+      <p class="cb-text">Para garantir a melhor implementação, nossa equipe entrará em contato para entender as necessidades da sua instituição.</p>
+    </div>
+    <div class="field-group"><label>Nome</label><input type="text" placeholder="Seu nome completo"></div>
+    <div class="field-group"><label>E-mail corporativo</label><input type="email" placeholder="voce@empresa.com"></div>
+    <div class="field-row">
+      <div class="field-group"><label>Data preferida</label><input type="text" placeholder="Ex: 25/03/2025"></div>
+      <div class="field-group"><label>Horário preferido</label><input type="text" placeholder="Ex: 14h – 16h"></div>
+    </div>
+    <button class="btn-primary" onclick="showScreen('commercial2')">Confirmar agendamento →</button>
+    <button class="btn-secondary" onclick="alert('Proposta enviada por e-mail!')">Receber proposta por e-mail</button>
+    <button class="btn-secondary" onclick="goBack('commercial')">← Voltar</button>
+  </div>
+
+  <!-- COMMERCIAL CONFIRM -->
+  <div class="screen" id="screen-commercial2">
+    <div class="success-screen">
+      <div class="success-icon">📅</div>
+      <div class="success-title">Solicitação enviada</div>
+      <p class="success-sub">Nosso time entrará em contato em até 1 dia útil para confirmar a reunião e alinhar os próximos passos.</p>
+      <div class="success-actions">
+        <button class="btn-primary" onclick="resetFlow()">← Voltar ao início</button>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /right-panel -->
+
+<script>
+  function togglePanel() {
+    document.getElementById('left-panel').classList.toggle('collapsed');
+  }
+
+  const TOTAL = 10;
+  let current = 1;
+
+  function updateProgress(step) {
+    const track = document.getElementById('stepTrack');
+    const badge = document.getElementById('stepBadge');
+    track.innerHTML = '';
+    for (let i = 1; i <= TOTAL; i++) {
+      const seg = document.createElement('div');
+      seg.className = 'step-seg';
+      if (i < step) seg.classList.add('done');
+      else if (i === step) seg.classList.add('active');
+      track.appendChild(seg);
+    }
+    const s = Math.min(step, TOTAL);
+    badge.textContent = String(s).padStart(2,'0') + ' / ' + String(TOTAL).padStart(2,'0');
+  }
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + id).classList.add('active');
+    document.querySelector('.right-panel').scrollTop = 0;
+    if (typeof id === 'number') updateProgress(id);
+  }
+
+  function selectOption(el, group) {
+    const parent = el.closest('.option-grid, .screen');
+    parent.querySelectorAll('.option-card[onclick*="' + group + '"]').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  function toggleMulti(el) { el.classList.toggle('selected'); }
+
+  function selectActivation(el) {
+    document.querySelectorAll('.activation-card').forEach(c => c.classList.remove('selected'));
+    el.classList.add('selected');
+  }
+
+  const analysisMessages = [
+    'Avaliando porte da instituição...',
+    'Analisando nível de risco emocional...',
+    'Definindo complexidade de implementação...',
+    'Classificando perfil institucional...'
+  ];
+
+  function runAnalysis(nextFn) {
+    let i = 0;
+    const el = document.getElementById('analysis-text');
+    const iv = setInterval(() => {
+      if (i < analysisMessages.length) { el.textContent = analysisMessages[i++]; }
+      else { clearInterval(iv); setTimeout(nextFn, 500); }
+    }, 750);
+  }
+
+  function goNext(from) {
+    if (from === 1) {
+      if (!document.querySelector('#screen-1 .option-card.selected')) {
+        document.getElementById('err-tipo').classList.add('show'); return;
+      }
+      document.getElementById('err-tipo').classList.remove('show');
+      current = 2; showScreen(2);
+
+    } else if (from === 2) {
+      current = 3; showScreen(3);
+
+    } else if (from === 3) {
+      const ids = ['nome-inst','cnpj','num-users','setor','cidade','nome-resp','cargo','email-corp','tel'];
+      let ok = true;
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el.value.trim()) { el.classList.add('error'); ok = false; }
+        else el.classList.remove('error');
+      });
+      if (!ok) { document.getElementById('err-campos').classList.add('show'); return; }
+      document.getElementById('err-campos').classList.remove('show');
+      current = 4; showScreen(4);
+      runAnalysis(() => { current = 5; showScreen(5); });
+
+    } else if (from === 5) {
+      const nome  = document.getElementById('nome-admin').value.trim();
+      const email = document.getElementById('email-admin').value.trim();
+      const pw    = document.getElementById('senha').value;
+      const pw2   = document.getElementById('senha2').value;
+      const terms = document.getElementById('ck-termos').checked;
+      if (!nome || !email || !pw || !pw2 || !terms) {
+        document.getElementById('err-login').classList.add('show'); return;
+      }
+      if (pw !== pw2) {
+        document.getElementById('err-pw2').classList.add('show'); return;
+      }
+      document.getElementById('err-login').classList.remove('show');
+      document.getElementById('err-pw2').classList.remove('show');
+      document.getElementById('email-sent').textContent = email;
+      current = 6; showScreen(6);
+
+    } else if (from === 6) {
+      current = 7; showScreen(7);
+
+    } else if (from === 7) {
+      current = 8; showScreen(8);
+
+    } else if (from === 8) {
+      if (!document.getElementById('ck-lgpd').checked) {
+        document.getElementById('err-lgpd').classList.add('show'); return;
+      }
+      document.getElementById('err-lgpd').classList.remove('show');
+      current = 9; showScreen(9);
+
+    } else if (from === 9) {
+      current = 10; showScreen(10);
+    }
+  }
+
+  function goBack(from) {
+    const map = { 2:1, 3:2, 5:3, 6:5, 7:6, 8:7, 9:8, commercial:3 };
+    const to = map[from];
+    if (to !== undefined) { current = to; showScreen(to); }
+  }
+
+  function resetFlow() { current = 1; showScreen(1); }
+
+  function checkPw(val) {
+    document.getElementById('pw-len').classList.toggle('pass', val.length >= 8);
+    document.getElementById('pw-upper').classList.toggle('pass', /[A-Z]/.test(val));
+    document.getElementById('pw-num').classList.toggle('pass', /[0-9]/.test(val));
+    document.getElementById('pw-special').classList.toggle('pass', /[^A-Za-z0-9]/.test(val));
+  }
+
+  function nextInput(el, idx) {
+    const inputs = document.querySelectorAll('.code-inputs input');
+    if (el.value.length === 1 && idx < 5) inputs[idx + 1].focus();
+  }
+
+  function maskPhone(el) {
+    let v = el.value.replace(/\D/g,'');
+    if (v.length > 11) v = v.slice(0,11);
+    if (v.length > 6) v = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
+    else if (v.length > 2) v = `(${v.slice(0,2)}) ${v.slice(2)}`;
+    el.value = v;
+  }
+
+  function maskCNPJ(el) {
+    let v = el.value.replace(/\D/g,'').slice(0,14);
+    v = v.replace(/^(\d{2})(\d)/,'$1.$2')
+         .replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3')
+         .replace(/\.(\d{3})(\d)/,'.$1/$2')
+         .replace(/(\d{4})(\d)/,'$1-$2');
+    el.value = v;
+  }
+
+  updateProgress(1);
+
+  function openLogin(e) {
+    e.preventDefault();
+    document.getElementById('login-backdrop').classList.add('open');
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => document.getElementById('login-email').focus(), 320);
+  }
+
+  function closeLogin(e) {
+    if (e && e.target !== document.getElementById('login-backdrop')) return;
+    document.getElementById('login-backdrop').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+</script>
+
+<!-- ── LOGIN MODAL ── -->
+<div class="login-backdrop" id="login-backdrop" onclick="closeLogin(event)">
+  <div class="login-card">
+    <img src="Fotos_plura/luma_2.png" alt="Luma" class="login-luma">
+    <button class="login-close" onclick="closeLogin(null)">✕</button>
+
+    <img src="Fotos_plura/logo_texto_branca.png" alt="PluraTalks" class="login-logo">
+    <div class="login-title">Bem-vindo de volta</div>
+    <div class="login-sub">Entre na sua conta institucional</div>
+    <div class="login-divider"></div>
+
+    <div class="login-field">
+      <label>E-mail</label>
+      <input id="login-email" type="email" placeholder="seu@email.com.br" autocomplete="email">
+    </div>
+    <div class="login-field">
+      <label>Senha</label>
+      <input id="login-pass" type="password" placeholder="••••••••" autocomplete="current-password">
+    </div>
+
+    <button class="login-btn" onclick="window.location.href='pluratalks-workspace (2).html'">Entrar na plataforma</button>
+
+    <div class="login-footer-text">
+      Esqueceu sua senha? <a href="#">Recuperar acesso</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>
