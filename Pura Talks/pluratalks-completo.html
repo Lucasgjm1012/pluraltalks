@@ -1274,6 +1274,79 @@
     gap: 10px;
   }
 
+  /* ── FATORES DE RISCO ── */
+  .risk-table { width:100%; border-collapse:collapse; }
+  .risk-table th {
+    font-size:11px; color:var(--muted); text-transform:uppercase;
+    letter-spacing:1px; font-weight:400; text-align:left;
+    padding:0 16px 12px 0; border-bottom:1px solid var(--border);
+  }
+  .risk-table td {
+    padding:13px 16px 13px 0; font-size:13px;
+    border-bottom:1px solid var(--border); vertical-align:middle;
+  }
+  .risk-table th:last-child, .risk-table td:last-child { padding-right:0; }
+  .risk-table tr:last-child td { border-bottom:none; }
+  .risk-bar { display:flex; align-items:center; gap:8px; min-width:110px; }
+  .risk-bar .bar-track { flex:1; height:6px; background:rgba(255,255,255,0.08); border-radius:3px; }
+  .risk-bar .bar-fill { height:6px; border-radius:3px; transition:width 0.4s; }
+  .risk-pct { font-size:12px; color:var(--muted); width:32px; text-align:right; }
+  .trend-up   { color:#f07878; font-weight:600; font-size:12px; white-space:nowrap; }
+  .trend-down { color:#34d399; font-weight:600; font-size:12px; white-space:nowrap; }
+  .trend-stable { color:#e6c84e; font-weight:600; font-size:12px; white-space:nowrap; }
+  .risk-action-btn {
+    font-size:11px; font-family:var(--font-body); font-weight:500;
+    background:rgba(120,96,203,0.15); color:var(--accent2);
+    border:1px solid rgba(120,96,203,0.3); border-radius:6px;
+    padding:5px 10px; cursor:pointer; white-space:nowrap; transition:all 0.18s;
+  }
+  .risk-action-btn:hover { background:rgba(120,96,203,0.28); }
+  .risk-action-btn.activated {
+    background:rgba(52,211,153,0.1); color:var(--ok);
+    border-color:rgba(52,211,153,0.3); cursor:default; opacity:0.7;
+  }
+  .risk-setor-select {
+    margin-top:8px; padding:7px 12px; background:var(--surface2);
+    border:1px solid var(--border); border-radius:8px; color:var(--text);
+    font-family:var(--font-body); font-size:13px; cursor:pointer; width:100%;
+    display:none;
+  }
+  /* Risk action modal */
+  .risk-modal-backdrop {
+    position:fixed; inset:0; background:rgba(15,12,34,0.72); backdrop-filter:blur(4px);
+    z-index:9000; display:none; align-items:center; justify-content:center;
+  }
+  .risk-modal-backdrop.open { display:flex; }
+  .risk-modal-card {
+    background:var(--surface); border:1px solid rgba(120,96,203,0.25);
+    border-radius:16px; width:360px; max-width:90vw; text-align:center;
+    overflow:visible; position:relative; padding:0 28px 28px;
+  }
+  .risk-modal-luma {
+    display:block; width:90px; margin:-45px auto 16px;
+    filter:drop-shadow(0 4px 16px rgba(120,96,203,0.4));
+  }
+  .risk-modal-title {
+    font-size:15px; font-weight:600; color:var(--text); margin-bottom:8px;
+  }
+  .risk-modal-sub {
+    font-size:13px; color:var(--muted); line-height:1.5; margin-bottom:20px;
+  }
+  .risk-modal-actions { display:flex; gap:10px; justify-content:center; }
+  .risk-modal-confirm {
+    background:var(--accent); color:#fff; border:none; border-radius:8px;
+    padding:10px 22px; font-family:var(--font-body); font-size:13px;
+    font-weight:600; cursor:pointer; transition:all 0.18s;
+  }
+  .risk-modal-confirm:hover { background:var(--accent2); }
+  .risk-modal-cancel {
+    background:transparent; color:var(--muted);
+    border:1px solid rgba(120,96,203,0.25); border-radius:8px;
+    padding:10px 22px; font-family:var(--font-body); font-size:13px;
+    cursor:pointer; transition:all 0.18s;
+  }
+  .risk-modal-cancel:hover { border-color:var(--accent); color:var(--text); }
+
   .bar-track {
     flex: 1;
     height: 6px;
@@ -2709,170 +2782,42 @@
 
     <!-- ROW 2: Sectors + Ring -->
     <div class="grid-3">
-      <!-- SECTOR TABLE -->
+      <!-- FATORES DE RISCO ORGANIZACIONAL -->
       <div class="card">
         <div class="card-header">
           <div>
-            <div class="card-title">Segmentação por Setor</div>
-            <div class="card-sub">Pressão emocional por área da empresa</div>
+            <div class="card-title">Fatores de Risco Organizacional</div>
+            <div class="card-sub">Principais drivers de estresse identificados entre os colaboradores</div>
           </div>
           <div class="tabs">
-            <button class="tab active" onclick="switchSectorTab('estresse', this)">Estresse</button>
-            <button class="tab" onclick="switchSectorTab('engajamento', this)">Engajamento</button>
+            <button class="tab active" id="risk-tab-todos" onclick="switchRiskFilter('todos',this)">Todos os setores</button>
+            <button class="tab" id="risk-tab-setor" onclick="switchRiskFilter('setor',this)">Por setor</button>
           </div>
         </div>
-        <div class="card-sub" id="sector-tab-sub" style="margin-bottom:12px;font-size:12px;color:var(--muted)">Pressão emocional por área da empresa</div>
-        <table class="sector-table">
+        <select class="risk-setor-select" id="risk-setor-select" onchange="selectRiskSetor(this.value)">
+          <option value="">Selecione um setor…</option>
+          <option value="Vendas">Vendas</option>
+          <option value="Operações">Operações</option>
+          <option value="Suporte">Suporte</option>
+          <option value="Marketing">Marketing</option>
+          <option value="Produto">Produto</option>
+          <option value="Financeiro">Financeiro</option>
+        </select>
+        <table class="risk-table" style="margin-top:14px;">
           <thead>
             <tr>
-              <th>Setor</th>
-              <th>Nível</th>
-              <th>Intensidade</th>
-              <th>Status</th>
+              <th>Fator</th>
+              <th>Prevalência</th>
+              <th>Tendência</th>
+              <th>Ação sugerida</th>
             </tr>
           </thead>
-          <!-- ESTRESSE -->
-          <tbody id="tbody-estresse">
-            <tr>
-              <td>Vendas</td>
-              <td>Alto</td>
-              <td>
-                <div class="stress-bar">
-                  <div class="bar-track"><div class="bar-fill" style="width:82%;background:var(--warn)"></div></div>
-                  <span style="font-size:12px;color:var(--muted);width:30px;text-align:right">82%</span>
-                </div>
-              </td>
-              <td><span class="chip chip-red">Crítico</span></td>
-            </tr>
-            <tr>
-              <td>Operações</td>
-              <td>Alto</td>
-              <td>
-                <div class="stress-bar">
-                  <div class="bar-track"><div class="bar-fill" style="width:76%;background:var(--warn)"></div></div>
-                  <span style="font-size:12px;color:var(--muted);width:30px;text-align:right">76%</span>
-                </div>
-              </td>
-              <td><span class="chip chip-red">Atenção</span></td>
-            </tr>
-            <tr>
-              <td>Suporte</td>
-              <td>Médio-Alto</td>
-              <td>
-                <div class="stress-bar">
-                  <div class="bar-track"><div class="bar-fill" style="width:61%;background:var(--accent3)"></div></div>
-                  <span style="font-size:12px;color:var(--muted);width:30px;text-align:right">61%</span>
-                </div>
-              </td>
-              <td><span class="chip chip-orange">Moderado</span></td>
-            </tr>
-            <tr>
-              <td>Marketing</td>
-              <td>Médio</td>
-              <td>
-                <div class="stress-bar">
-                  <div class="bar-track"><div class="bar-fill" style="width:44%;background:var(--accent2)"></div></div>
-                  <span style="font-size:12px;color:var(--muted);width:30px;text-align:right">44%</span>
-                </div>
-              </td>
-              <td><span class="chip chip-blue">Estável</span></td>
-            </tr>
-            <tr>
-              <td>Produto</td>
-              <td>Baixo</td>
-              <td>
-                <div class="stress-bar">
-                  <div class="bar-track"><div class="bar-fill" style="width:29%;background:var(--accent)"></div></div>
-                  <span style="font-size:12px;color:var(--muted);width:30px;text-align:right">29%</span>
-                </div>
-              </td>
-              <td><span class="chip chip-green">Saudável</span></td>
-            </tr>
-            <tr>
-              <td>Financeiro</td>
-              <td>Baixo</td>
-              <td>
-                <div class="stress-bar">
-                  <div class="bar-track"><div class="bar-fill" style="width:22%;background:var(--accent)"></div></div>
-                  <span style="font-size:12px;color:var(--muted);width:30px;text-align:right">22%</span>
-                </div>
-              </td>
-              <td><span class="chip chip-green">Saudável</span></td>
-            </tr>
-          </tbody>
-          <!-- ENGAJAMENTO -->
-          <tbody id="tbody-engajamento" style="display:none">
-            <tr>
-              <td>Produto</td>
-              <td>Alto</td>
-              <td>
-                <div class="stress-bar">
-                  <div class="bar-track"><div class="bar-fill" style="width:91%;background:var(--accent)"></div></div>
-                  <span style="font-size:12px;color:var(--muted);width:30px;text-align:right">91%</span>
-                </div>
-              </td>
-              <td><span class="chip chip-green">Excelente</span></td>
-            </tr>
-            <tr>
-              <td>Marketing</td>
-              <td>Alto</td>
-              <td>
-                <div class="stress-bar">
-                  <div class="bar-track"><div class="bar-fill" style="width:78%;background:var(--accent)"></div></div>
-                  <span style="font-size:12px;color:var(--muted);width:30px;text-align:right">78%</span>
-                </div>
-              </td>
-              <td><span class="chip chip-green">Muito Bom</span></td>
-            </tr>
-            <tr>
-              <td>Financeiro</td>
-              <td>Médio-Alto</td>
-              <td>
-                <div class="stress-bar">
-                  <div class="bar-track"><div class="bar-fill" style="width:65%;background:var(--accent2)"></div></div>
-                  <span style="font-size:12px;color:var(--muted);width:30px;text-align:right">65%</span>
-                </div>
-              </td>
-              <td><span class="chip chip-blue">Bom</span></td>
-            </tr>
-            <tr>
-              <td>Suporte</td>
-              <td>Médio</td>
-              <td>
-                <div class="stress-bar">
-                  <div class="bar-track"><div class="bar-fill" style="width:52%;background:var(--accent3)"></div></div>
-                  <span style="font-size:12px;color:var(--muted);width:30px;text-align:right">52%</span>
-                </div>
-              </td>
-              <td><span class="chip chip-orange">Regular</span></td>
-            </tr>
-            <tr>
-              <td>Operações</td>
-              <td>Médio</td>
-              <td>
-                <div class="stress-bar">
-                  <div class="bar-track"><div class="bar-fill" style="width:44%;background:var(--accent3)"></div></div>
-                  <span style="font-size:12px;color:var(--muted);width:30px;text-align:right">44%</span>
-                </div>
-              </td>
-              <td><span class="chip chip-orange">Regular</span></td>
-            </tr>
-            <tr>
-              <td>Vendas</td>
-              <td>Baixo</td>
-              <td>
-                <div class="stress-bar">
-                  <div class="bar-track"><div class="bar-fill" style="width:28%;background:var(--warn)"></div></div>
-                  <span style="font-size:12px;color:var(--muted);width:30px;text-align:right">28%</span>
-                </div>
-              </td>
-              <td><span class="chip chip-red">Crítico</span></td>
-            </tr>
-          </tbody>
+          <tbody id="risk-tbody"></tbody>
         </table>
       </div>
 
       <!-- RING CHART -->
+
       <div class="card">
         <div class="card-header">
           <div>
@@ -3974,6 +3919,19 @@
   </div>
 </div>
 
+<!-- ── RISCO AÇÃO MODAL ── -->
+<div class="risk-modal-backdrop" id="risk-action-backdrop">
+  <div class="risk-modal-card">
+    <img src="Fotos_plura/luma_4.png" alt="Luma" class="risk-modal-luma">
+    <div class="risk-modal-title" id="risk-modal-title">Deseja ativar essa ação?</div>
+    <div class="risk-modal-sub" id="risk-modal-sub"></div>
+    <div class="risk-modal-actions">
+      <button class="risk-modal-confirm" onclick="confirmRiskAction()">Confirmar</button>
+      <button class="risk-modal-cancel" onclick="cancelRiskAction()">Cancelar</button>
+    </div>
+  </div>
+</div>
+
 <!-- ── PLAYBOOK MODAL ── -->
 <div class="modal-backdrop" id="playbook-backdrop" onclick="closePlaybook(event)">
   <div class="modal" id="playbook-modal">
@@ -4015,6 +3973,7 @@
     document.body.style.overflow = 'hidden';
     renderCampanhas();
     renderGestoresList();
+    renderRiskTable(_riskAllData, 'Toda a empresa');
   }
   function showInstitucional() {
     document.getElementById('app-workspace').style.display = 'none';
@@ -4581,33 +4540,129 @@
     });
   }
 
-  function switchSectorTab(tab, btn) {
-    document.querySelectorAll('.tabs .tab').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    const subs = {
-      estresse:    'Pressão emocional por área da empresa',
-      engajamento: 'Nível de engajamento por área da empresa'
-    };
-    const subEl = document.getElementById('sector-tab-sub');
-    const outId = tab === 'estresse' ? 'tbody-engajamento' : 'tbody-estresse';
-    const inId  = tab === 'estresse' ? 'tbody-estresse'    : 'tbody-engajamento';
-    const outEl = document.getElementById(outId);
-    const inEl  = document.getElementById(inId);
+  // ── FATORES DE RISCO ──
+  var _riskAllData = [
+    { fator:'Sobrecarga de trabalho',  prev:38, trend:'up',     trendTxt:'Subindo (+5pp)', acao:"Ativar trilha 'Gestão de Limites'" },
+    { fator:'Conflitos com liderança', prev:29, trend:'stable', trendTxt:'Estável',         acao:"Agendar roda de conversa sobre liderança empática" },
+    { fator:'Insegurança na carreira', prev:24, trend:'up',     trendTxt:'Subindo (+3pp)', acao:"Enviar campanha 'Construindo Autoconfiança'" },
+    { fator:'Isolamento social',       prev:19, trend:'down',   trendTxt:'Caindo (-2pp)',  acao:"Promover comunidade 'Conexões no Trabalho'" },
+    { fator:'Dificuldade de sono',     prev:15, trend:'stable', trendTxt:'Estável',         acao:"Recomendar trilha 'Higiene do Sono'" },
+  ];
+  var _riskSetorData = {
+    'Vendas':     [
+      { fator:'Pressão por metas',        prev:62, trend:'up',     trendTxt:'Subindo (+8pp)', acao:"Ativar trilha 'Gestão de Pressão'" },
+      { fator:'Sobrecarga de trabalho',   prev:54, trend:'up',     trendTxt:'Subindo (+6pp)', acao:"Agendar sessão de feedback" },
+      { fator:'Insegurança na carreira',  prev:31, trend:'stable', trendTxt:'Estável',         acao:"Enviar campanha 'Autoconfiança'" },
+      { fator:'Conflitos com liderança',  prev:28, trend:'down',   trendTxt:'Caindo (-3pp)',  acao:"Promover roda de conversa" },
+      { fator:'Isolamento social',        prev:18, trend:'stable', trendTxt:'Estável',         acao:"Criar grupo de integração" },
+    ],
+    'Operações':  [
+      { fator:'Sobrecarga de trabalho',   prev:71, trend:'up',     trendTxt:'Subindo (+9pp)', acao:"Redistribuir cargas de trabalho" },
+      { fator:'Dificuldade de sono',      prev:42, trend:'up',     trendTxt:'Subindo (+5pp)', acao:"Recomendar trilha 'Higiene do Sono'" },
+      { fator:'Conflitos com liderança',  prev:35, trend:'stable', trendTxt:'Estável',         acao:"Workshop de liderança empática" },
+      { fator:'Isolamento social',        prev:22, trend:'down',   trendTxt:'Caindo (-4pp)',  acao:"Ativar comunidade interna" },
+      { fator:'Insegurança na carreira',  prev:19, trend:'stable', trendTxt:'Estável',         acao:"Trilha de desenvolvimento" },
+    ],
+    'Suporte':    [
+      { fator:'Esgotamento emocional',    prev:48, trend:'up',     trendTxt:'Subindo (+7pp)', acao:"Campanha de autocuidado" },
+      { fator:'Sobrecarga de trabalho',   prev:41, trend:'stable', trendTxt:'Estável',         acao:"Revisar volume de chamados" },
+      { fator:'Conflitos com liderança',  prev:29, trend:'down',   trendTxt:'Caindo (-2pp)',  acao:"Feedback estruturado" },
+      { fator:'Falta de reconhecimento',  prev:25, trend:'up',     trendTxt:'Subindo (+4pp)', acao:"Programa de reconhecimento" },
+      { fator:'Dificuldade de sono',      prev:18, trend:'stable', trendTxt:'Estável',         acao:"Trilha 'Higiene do Sono'" },
+    ],
+    'Marketing':  [
+      { fator:'Insegurança na carreira',  prev:33, trend:'up',     trendTxt:'Subindo (+4pp)', acao:"Plano de desenvolvimento individual" },
+      { fator:'Sobrecarga de trabalho',   prev:28, trend:'stable', trendTxt:'Estável',         acao:"Revisão de prazos" },
+      { fator:'Isolamento social',        prev:21, trend:'down',   trendTxt:'Caindo (-5pp)',  acao:"Ativar squad de integração" },
+      { fator:'Conflitos com liderança',  prev:18, trend:'stable', trendTxt:'Estável',         acao:"Reunião de alinhamento" },
+      { fator:'Dificuldade de sono',      prev:12, trend:'down',   trendTxt:'Caindo (-1pp)',  acao:"Trilha de bem-estar" },
+    ],
+    'Produto':    [
+      { fator:'Sobrecarga de trabalho',   prev:36, trend:'stable', trendTxt:'Estável',         acao:"Revisão de backlog" },
+      { fator:'Insegurança na carreira',  prev:27, trend:'down',   trendTxt:'Caindo (-3pp)',  acao:"Mentoria técnica" },
+      { fator:'Isolamento social',        prev:20, trend:'up',     trendTxt:'Subindo (+2pp)', acao:"Ritual de integração semanal" },
+      { fator:'Conflitos com liderança',  prev:14, trend:'stable', trendTxt:'Estável',         acao:"Retrospectiva de time" },
+      { fator:'Dificuldade de sono',      prev:11, trend:'down',   trendTxt:'Caindo (-2pp)',  acao:"Trilha 'Higiene do Sono'" },
+    ],
+    'Financeiro': [
+      { fator:'Pressão por resultados',   prev:44, trend:'up',     trendTxt:'Subindo (+6pp)', acao:"Ativar trilha 'Foco e Clareza'" },
+      { fator:'Insegurança na carreira',  prev:29, trend:'stable', trendTxt:'Estável',         acao:"Plano de carreira estruturado" },
+      { fator:'Sobrecarga de trabalho',   prev:24, trend:'down',   trendTxt:'Caindo (-2pp)',  acao:"Mapeamento de atividades" },
+      { fator:'Dificuldade de sono',      prev:19, trend:'up',     trendTxt:'Subindo (+3pp)', acao:"Campanha de bem-estar noturno" },
+      { fator:'Isolamento social',        prev:13, trend:'stable', trendTxt:'Estável',         acao:"Grupo de integração mensal" },
+    ],
+  };
+  var _riskCurrentScope = 'Toda a empresa';
+  var _riskPendingBtn   = null;
 
-    // fade out current
-    outEl.style.opacity = '0';
-    setTimeout(() => {
-      outEl.style.display = 'none';
-      outEl.style.opacity = '1';
-      subEl.textContent = subs[tab];
-      inEl.style.opacity = '0';
-      inEl.style.display = '';
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => { inEl.style.opacity = '1'; });
-      });
-    }, 180);
+  function renderRiskTable(data, scope) {
+    _riskCurrentScope = scope;
+    var tbody = document.getElementById('risk-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = data.map(function(row) {
+      var color     = row.prev >= 35 ? 'var(--warn)' : row.prev >= 22 ? 'var(--accent2)' : 'var(--accent)';
+      var trendCls  = row.trend === 'up' ? 'trend-up' : row.trend === 'down' ? 'trend-down' : 'trend-stable';
+      var trendIcon = row.trend === 'up' ? '↑' : row.trend === 'down' ? '↓' : '→';
+      var btnLabel  = row.acao.length > 28 ? row.acao.slice(0, 26) + '…' : row.acao;
+      var fatorEsc  = row.fator.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+      var acaoEsc   = row.acao.replace(/\\/g,'\\\\').replace(/'/g,"\\'");
+      return '<tr>' +
+        '<td style="font-weight:500;max-width:130px">' + row.fator + '</td>' +
+        '<td><div class="risk-bar"><div class="bar-track"><div class="bar-fill" style="width:' + row.prev + '%;background:' + color + '"></div></div><span class="risk-pct">' + row.prev + '%</span></div></td>' +
+        '<td><span class="' + trendCls + '">' + trendIcon + ' ' + row.trendTxt + '</span></td>' +
+        '<td><button class="risk-action-btn" onclick="openRiskActionModal(\'' + fatorEsc + '\',\'' + acaoEsc + '\',this)">' + btnLabel + '</button></td>' +
+      '</tr>';
+    }).join('');
   }
 
+  function switchRiskFilter(mode, btn) {
+    document.querySelectorAll('#risk-tab-todos, #risk-tab-setor').forEach(function(b){ b.classList.remove('active'); });
+    btn.classList.add('active');
+    var sel = document.getElementById('risk-setor-select');
+    if (mode === 'todos') {
+      sel.style.display = 'none';
+      sel.value = '';
+      renderRiskTable(_riskAllData, 'Toda a empresa');
+    } else {
+      sel.style.display = 'block';
+      if (sel.value) {
+        renderRiskTable(_riskSetorData[sel.value] || _riskAllData, sel.value);
+      } else {
+        renderRiskTable(_riskAllData, 'Toda a empresa');
+      }
+    }
+  }
+
+  function selectRiskSetor(setor) {
+    if (!setor) { renderRiskTable(_riskAllData, 'Toda a empresa'); return; }
+    renderRiskTable(_riskSetorData[setor] || _riskAllData, setor);
+  }
+
+  function openRiskActionModal(fator, acao, btnEl) {
+    if (btnEl.classList.contains('activated')) return;
+    _riskPendingBtn = btnEl;
+    document.getElementById('risk-modal-title').textContent = 'Deseja ativar essa ação para ' + _riskCurrentScope + '?';
+    document.getElementById('risk-modal-sub').textContent = acao;
+    document.getElementById('risk-action-backdrop').classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function confirmRiskAction() {
+    if (_riskPendingBtn) {
+      _riskPendingBtn.textContent = 'Ativado ✓';
+      _riskPendingBtn.classList.add('activated');
+      _riskPendingBtn.disabled = true;
+      _riskPendingBtn = null;
+    }
+    cancelRiskAction();
+  }
+
+  function cancelRiskAction() {
+    document.getElementById('risk-action-backdrop').classList.remove('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function switchSectorTab(tab, btn) {
   function goToDashboard() {
     const dashNav = document.querySelector('.nav-item[onclick*="dashboard"]');
     setPage('dashboard', dashNav);
@@ -5088,6 +5143,7 @@
   }
 
   renderCampanhas();
+  renderRiskTable(_riskAllData, 'Toda a empresa');
 
 
 
