@@ -39,7 +39,7 @@
     color: var(--text);
     min-height: 100vh;
     display: flex;
-    overflow: hidden;
+    overflow: auto;
   }
 
   /* ── SIDEBAR ── */
@@ -2513,176 +2513,6 @@
 
 </div><!-- /right-panel -->
 
-<script>
-  function togglePanel() {
-    document.getElementById('left-panel').classList.toggle('collapsed');
-  }
-
-  const TOTAL = 10;
-  let current = 1;
-
-  function updateProgress(step) {
-    const track = document.getElementById('stepTrack');
-    const badge = document.getElementById('stepBadge');
-    track.innerHTML = '';
-    for (let i = 1; i <= TOTAL; i++) {
-      const seg = document.createElement('div');
-      seg.className = 'step-seg';
-      if (i < step) seg.classList.add('done');
-      else if (i === step) seg.classList.add('active');
-      track.appendChild(seg);
-    }
-    const s = Math.min(step, TOTAL);
-    badge.textContent = String(s).padStart(2,'0') + ' / ' + String(TOTAL).padStart(2,'0');
-  }
-
-  function showScreen(id) {
-    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-    document.getElementById('screen-' + id).classList.add('active');
-    document.querySelector('.right-panel').scrollTop = 0;
-    if (typeof id === 'number') updateProgress(id);
-  }
-
-  function selectOption(el, group) {
-    const parent = el.closest('.option-grid, .screen');
-    parent.querySelectorAll('.option-card[onclick*="' + group + '"]').forEach(c => c.classList.remove('selected'));
-    el.classList.add('selected');
-  }
-
-  function toggleMulti(el) { el.classList.toggle('selected'); }
-
-  function selectActivation(el) {
-    document.querySelectorAll('.activation-card').forEach(c => c.classList.remove('selected'));
-    el.classList.add('selected');
-  }
-
-  const analysisMessages = [
-    'Avaliando porte da instituição...',
-    'Analisando nível de risco emocional...',
-    'Definindo complexidade de implementação...',
-    'Classificando perfil institucional...'
-  ];
-
-  function runAnalysis(nextFn) {
-    let i = 0;
-    const el = document.getElementById('analysis-text');
-    const iv = setInterval(() => {
-      if (i < analysisMessages.length) { el.textContent = analysisMessages[i++]; }
-      else { clearInterval(iv); setTimeout(nextFn, 500); }
-    }, 750);
-  }
-
-  function goNext(from) {
-    if (from === 1) {
-      if (!document.querySelector('#screen-1 .option-card.selected')) {
-        document.getElementById('err-tipo').classList.add('show'); return;
-      }
-      document.getElementById('err-tipo').classList.remove('show');
-      current = 2; showScreen(2);
-
-    } else if (from === 2) {
-      current = 3; showScreen(3);
-
-    } else if (from === 3) {
-      const ids = ['nome-inst','cnpj','num-users','setor','cidade','nome-resp','cargo','email-corp','tel'];
-      let ok = true;
-      ids.forEach(id => {
-        const el = document.getElementById(id);
-        if (!el.value.trim()) { el.classList.add('error'); ok = false; }
-        else el.classList.remove('error');
-      });
-      if (!ok) { document.getElementById('err-campos').classList.add('show'); return; }
-      document.getElementById('err-campos').classList.remove('show');
-      current = 4; showScreen(4);
-      runAnalysis(() => { current = 5; showScreen(5); });
-
-    } else if (from === 5) {
-      const nome  = document.getElementById('nome-admin').value.trim();
-      const email = document.getElementById('email-admin').value.trim();
-      const pw    = document.getElementById('senha').value;
-      const pw2   = document.getElementById('senha2').value;
-      const terms = document.getElementById('ck-termos').checked;
-      if (!nome || !email || !pw || !pw2 || !terms) {
-        document.getElementById('err-login').classList.add('show'); return;
-      }
-      if (pw !== pw2) {
-        document.getElementById('err-pw2').classList.add('show'); return;
-      }
-      document.getElementById('err-login').classList.remove('show');
-      document.getElementById('err-pw2').classList.remove('show');
-      document.getElementById('email-sent').textContent = email;
-      current = 6; showScreen(6);
-
-    } else if (from === 6) {
-      current = 7; showScreen(7);
-
-    } else if (from === 7) {
-      current = 8; showScreen(8);
-
-    } else if (from === 8) {
-      if (!document.getElementById('ck-lgpd').checked) {
-        document.getElementById('err-lgpd').classList.add('show'); return;
-      }
-      document.getElementById('err-lgpd').classList.remove('show');
-      current = 9; showScreen(9);
-
-    } else if (from === 9) {
-      current = 10; showScreen(10);
-    }
-  }
-
-  function goBack(from) {
-    const map = { 2:1, 3:2, 5:3, 6:5, 7:6, 8:7, 9:8, commercial:3 };
-    const to = map[from];
-    if (to !== undefined) { current = to; showScreen(to); }
-  }
-
-  function resetFlow() { current = 1; showScreen(1); }
-
-  function checkPw(val) {
-    document.getElementById('pw-len').classList.toggle('pass', val.length >= 8);
-    document.getElementById('pw-upper').classList.toggle('pass', /[A-Z]/.test(val));
-    document.getElementById('pw-num').classList.toggle('pass', /[0-9]/.test(val));
-    document.getElementById('pw-special').classList.toggle('pass', /[^A-Za-z0-9]/.test(val));
-  }
-
-  function nextInput(el, idx) {
-    const inputs = document.querySelectorAll('.code-inputs input');
-    if (el.value.length === 1 && idx < 5) inputs[idx + 1].focus();
-  }
-
-  function maskPhone(el) {
-    let v = el.value.replace(/\D/g,'');
-    if (v.length > 11) v = v.slice(0,11);
-    if (v.length > 6) v = `(${v.slice(0,2)}) ${v.slice(2,7)}-${v.slice(7)}`;
-    else if (v.length > 2) v = `(${v.slice(0,2)}) ${v.slice(2)}`;
-    el.value = v;
-  }
-
-  function maskCNPJ(el) {
-    let v = el.value.replace(/\D/g,'').slice(0,14);
-    v = v.replace(/^(\d{2})(\d)/,'$1.$2')
-         .replace(/^(\d{2})\.(\d{3})(\d)/,'$1.$2.$3')
-         .replace(/\.(\d{3})(\d)/,'.$1/$2')
-         .replace(/(\d{4})(\d)/,'$1-$2');
-    el.value = v;
-  }
-
-  updateProgress(1);
-
-  function openLogin(e) {
-    e.preventDefault();
-    document.getElementById('login-backdrop').classList.add('open');
-    document.body.style.overflow = 'hidden';
-    setTimeout(() => document.getElementById('login-email').focus(), 320);
-  }
-
-  function closeLogin(e) {
-    if (e && e.target !== document.getElementById('login-backdrop')) return;
-    document.getElementById('login-backdrop').classList.remove('open');
-    document.body.style.overflow = '';
-  }
-</script>
 
 <!-- ── LOGIN MODAL ── -->
 <div class="login-backdrop" id="login-backdrop" onclick="closeLogin(event)">
@@ -4191,23 +4021,6 @@
     document.getElementById('app-institucional').style.display = 'flex';
     document.body.style.overflow = '';
   }
-
-
-
-  // ── WORKSPACE GLOBALS ──
-  var campanhasList = [
-    { id:0, nome:'Semana do Bem-estar 💚', status:'ativa', tipo:'Acolhimento 🤝', dest:'Toda a organização', inicio:'10/03/2026', freq:'Envio único', msg:'Incentivo ao check-in emocional diário...', cta:'Fazer check-in emocional', tom:'Acolhedor', meta1:'↗ 72% abertura', meta2:'Encerra em 3 dias', accentColor:'var(--accent)' },
-    { id:1, nome:'Check-in de Março 🎯', status:'agendada', tipo:'Check-in 📊', dest:'Liderança', inicio:'25/03/2026', freq:'Semanal', msg:'Acompanhamento do bem-estar da liderança...', cta:'Responder check-in', tom:'Direto', meta1:'↗ 65% abertura', meta2:'Inicia em 1 dia', accentColor:'var(--accent2)' },
-    { id:2, nome:'Janeiro Branco ⚪', status:'encerrada', tipo:'Conscientização 🌱', dest:'Toda a organização', inicio:'01/01/2026', freq:'Envio único', msg:'Campanha de conscientização sobre saúde mental...', cta:'Saiba mais', tom:'Informativo', meta1:'↗ 81% abertura', meta2:'Encerrada', accentColor:'var(--accent3)' },
-  ];
-  var nextCampanhaId = 3;
-  var cdCurrentId = null;
-  var STATUS_CONFIG = {
-    ativa:     { label:'Ativa',     color:'var(--ok)',     bg:'rgba(52,211,153,0.12)' },
-    agendada:  { label:'Agendada',  color:'var(--accent2)',bg:'rgba(167,144,240,0.12)' },
-    encerrada: { label:'Encerrada', color:'var(--muted)',  bg:'rgba(155,148,187,0.12)' },
-    desativada:{ label:'Desativada',color:'var(--warn)',   bg:'rgba(240,120,120,0.12)' },
-  };
 
 
 
