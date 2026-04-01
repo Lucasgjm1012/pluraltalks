@@ -1,0 +1,66 @@
+/* ============================================
+   PluraTalks — Design Tokens
+   Extraído de: Plura_talk_guideline.pptx
+   ============================================ */
+
+/* ── Fontes ── */
+/* Importar do Google Fonts no seu HTML:
+   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Tahoma&display=swap" rel="stylesheet">
+*/
+
+:root {
+  /* ── Tipografia ── */
+  --font-heading: 'Tahoma', 'Segoe UI', sans-serif;        /* Tahoma Medium (títulos, UI) */
+  --font-body:    'Montserrat', 'Helvetica Neue', sans-serif; /* Montserrat Light (corpo, parágrafos) */
+
+  /* ── Paleta Principal (gradiente roxo da marca) ── */
+  --plura-900: #432D8E;   /* roxo escuro — cor primária / logotipo */
+  --plura-800: #432E8E;   /* variação mínima do primário */
+  --plura-700: #453094;   /* roxo denso */
+  --plura-600: #4F3A9D;   /* roxo médio-escuro */
+  --plura-500: #654FB2;   /* roxo médio */
+  --plura-400: #7B65C7;   /* roxo médio-claro */
+  --plura-300: #8E78D9;   /* lavanda escura */
+  --plura-200: #A089E9;   /* lavanda média */
+  --plura-100: #A790F0;   /* lavanda clara — extremo claro do gradiente */
+
+  /* ── Neutros ── */
+  --neutral-900: #000000;  /* preto puro (fundo do quadrado de logo) */
+  --neutral-500: #818181;  /* cinza médio */
+  --neutral-300: #BFBFBF;  /* cinza claro */
+  --neutral-100: #E8E8E8;  /* off-white (lt2 do tema) */
+  --neutral-50:  #FFFFFF;  /* branco */
+
+  /* ── Cores de uso recente (presProps) ── */
+  --plura-accent: #7860CB; /* roxo intermediário (usado como acento) */
+
+  /* ── Gradiente da marca (barra horizontal do slide) ── */
+  /* De claro (#A790F0) para escuro (#432E8E), top-to-bottom */
+  --gradient-brand: linear-gradient(to right, #A790F0, #432E8E);
+
+  /* ── Sombras e utilitários ── */
+  --shadow-sm: 0 1px 3px rgba(67, 45, 142, 0.12);
+  --shadow-md: 0 4px 12px rgba(67, 45, 142, 0.18);
+  --radius-sm: 8px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+}
+
+/* ── Classes utilitárias opcionais ── */
+
+.font-heading {
+  font-family: var(--font-heading);
+}
+
+.font-body {
+  font-family: var(--font-body);
+  font-weight: 300; /* Montserrat Light */
+}
+
+.bg-brand-gradient {
+  background: var(--gradient-brand);
+}
+
+.text-brand {
+  color: var(--plura-900);
+}
