@@ -2881,6 +2881,7 @@
           <option value="Marketing">Marketing</option>
           <option value="Produto">Produto</option>
           <option value="Financeiro">Financeiro</option>
+          <option value="Compliance">Compliance</option>
         </select>
         <table class="risk-table" style="margin-top:14px;">
           <thead>
@@ -4726,6 +4727,7 @@
       { fator:'Dificuldade de sono',      prev:19, trend:'up',     trendTxt:'Subindo (+3pp)', acao:"Campanha de bem-estar noturno" },
       { fator:'Isolamento social',        prev:13, trend:'stable', trendTxt:'Estável',         acao:"Grupo de integração mensal" },
     ],
+    'Compliance': null,
   };
   var _riskCurrentScope = 'Toda a empresa';
   var _riskPendingBtn   = null;
@@ -4734,6 +4736,11 @@
     _riskCurrentScope = scope;
     var tbody = document.getElementById('risk-tbody');
     if (!tbody) return;
+    // clear anonymity error if present
+    var errEl = document.getElementById('risk-anon-error');
+    if (errEl) errEl.remove();
+    var table = tbody.closest('table');
+    if (table) table.style.display = '';
     tbody.innerHTML = data.map(function(row) {
       var color     = row.prev >= 35 ? 'var(--warn)' : row.prev >= 22 ? 'var(--accent2)' : 'var(--accent)';
       var trendCls  = row.trend === 'up' ? 'trend-up' : row.trend === 'down' ? 'trend-down' : 'trend-stable';
@@ -4757,6 +4764,8 @@
     if (mode === 'todos') {
       sel.style.display = 'none';
       sel.value = '';
+      var errEl = document.getElementById('risk-anon-error');
+      if (errEl) errEl.remove();
       renderRiskTable(_riskAllData, 'Toda a empresa');
     } else {
       sel.style.display = 'block';
@@ -4770,7 +4779,32 @@
 
   function selectRiskSetor(setor) {
     if (!setor) { renderRiskTable(_riskAllData, 'Toda a empresa'); return; }
+    if (_riskSetorData[setor] === null) { renderRiskAnonymityError(setor); return; }
     renderRiskTable(_riskSetorData[setor] || _riskAllData, setor);
+  }
+
+  function renderRiskAnonymityError(setor) {
+    _riskCurrentScope = setor;
+    var tbody = document.getElementById('risk-tbody');
+    if (!tbody) return;
+    var table = tbody.closest('table');
+    if (table) table.style.display = 'none';
+    var existing = document.getElementById('risk-anon-error');
+    if (existing) existing.remove();
+    var err = document.createElement('div');
+    err.id = 'risk-anon-error';
+    err.style.cssText = 'margin-top:16px;padding:16px 18px;background:rgba(240,120,120,0.07);border:1px solid rgba(240,120,120,0.25);border-radius:10px;display:flex;gap:14px;align-items:flex-start;';
+    err.innerHTML =
+      '<span style="font-size:22px;line-height:1;margin-top:1px;">🔒</span>' +
+      '<div>' +
+        '<div style="font-size:13px;font-weight:600;color:var(--warn);margin-bottom:4px;">Dados insuficientes para exibição</div>' +
+        '<div style="font-size:12px;color:var(--muted);line-height:1.6;">' +
+          'O setor <strong style="color:var(--text)">Compliance</strong> possui menos colaboradores que o limiar mínimo de anonimato ' +
+          '<strong style="color:var(--text)">(n&nbsp;=&nbsp;10)</strong>. ' +
+          'Para preservar a privacidade individual, os dados desse setor não podem ser exibidos de forma agregada.' +
+        '</div>' +
+      '</div>';
+    tbody.closest('table').parentNode.appendChild(err);
   }
 
   function openRiskActionModal(fator, acao, btnEl) {
