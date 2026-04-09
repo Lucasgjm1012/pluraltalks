@@ -3405,7 +3405,7 @@
               <div style="font-size:13px;font-weight:500;">Limiar mínimo de anonimato</div>
               <div style="font-size:12px;color:var(--muted);margin-top:3px;">Grupos menores não exibem dados</div>
             </div>
-            <div style="font-family:var(--font-heading);font-size:22px;color:var(--accent)">5</div>
+            <div id="anon-threshold-value" style="font-family:var(--font-heading);font-size:22px;color:var(--accent)">5</div>
           </div>
           <div style="display:flex;align-items:center;justify-content:space-between;padding:14px;background:var(--surface2);border:1px solid var(--border);border-radius:10px;">
             <div>
@@ -4791,6 +4791,8 @@
     if (table) table.style.display = 'none';
     var existing = document.getElementById('risk-anon-error');
     if (existing) existing.remove();
+    var thresholdEl = document.getElementById('anon-threshold-value');
+    var n = thresholdEl ? thresholdEl.textContent.trim() : '5';
     var err = document.createElement('div');
     err.id = 'risk-anon-error';
     err.style.cssText = 'margin-top:16px;padding:16px 18px;background:rgba(240,120,120,0.07);border:1px solid rgba(240,120,120,0.25);border-radius:10px;display:flex;gap:14px;align-items:flex-start;';
@@ -4799,8 +4801,8 @@
       '<div>' +
         '<div style="font-size:13px;font-weight:600;color:var(--warn);margin-bottom:4px;">Dados insuficientes para exibição</div>' +
         '<div style="font-size:12px;color:var(--muted);line-height:1.6;">' +
-          'O setor <strong style="color:var(--text)">Compliance</strong> possui menos colaboradores que o limiar mínimo de anonimato ' +
-          '<strong style="color:var(--text)">(n&nbsp;=&nbsp;10)</strong>. ' +
+          'O setor <strong style="color:var(--text)">' + setor + '</strong> possui menos colaboradores que o limiar mínimo de anonimato ' +
+          'definido em Configuração e Privacidade: <strong style="color:var(--accent)">(n&nbsp;=&nbsp;' + n + ')</strong>. ' +
           'Para preservar a privacidade individual, os dados desse setor não podem ser exibidos de forma agregada.' +
         '</div>' +
       '</div>';
